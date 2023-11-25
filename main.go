@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	cfg config.Config
+	configuration config.Config
 	log	= logrus.New()
 	errChan = make(chan error)
 )
@@ -25,7 +25,11 @@ func init() {
 	configPath := flag.String("config", "config.yaml", "Full path to your config file")
 	flag.Parse()
 
-	cfg, err := config.LoadConfig(*configPath)
+	cfg, err := config.LoadConfig(configPath)
+	if err != nil {
+		log.WithError(err).Fatal("Failed to load config file")
+	}
+	configuration = cfg
 	
 	log.Info("Read config file successfully")
 
@@ -53,7 +57,7 @@ func main() {
 	stopCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	apiServer := api.New(log, stopCtx, errChan, cfg.API)
+	apiServer := api.New(log, stopCtx, errChan, configuration.API)
 	go apiServer.Start()
 
 	<-stopCtx.Done()

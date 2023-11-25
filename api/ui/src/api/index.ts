@@ -5,8 +5,8 @@ export const API = createApi({
     refetchOnFocus: true,
     endpoints: () => ({}),
     baseQuery: fetchBaseQuery({
-        baseUrl: import.meta.env.VITE_API_URL,
-        credentials: "include",
+        baseUrl: "/",
+        credentials: "same-origin",
         mode: "cors",
         cache: "no-cache"
     })

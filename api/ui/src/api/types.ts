@@ -3,3 +3,7 @@ export interface Task {
     command: string
     target: string
 }
+
+export interface TaskResponse {
+    output: string
+}

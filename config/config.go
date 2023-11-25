@@ -1,35 +1,32 @@
 package config
 
 import (
-	
-	"github.com/dutchis/looking-glass/api"
-
 	"github.com/spf13/viper"
 )
 
-type Branding struct {
-	LogoURL string `mapstructure:"logoUrl" json:"logoUrl"`
+type APIConfig struct {
+	IP 		string `mapstructure:"ip"`
+	Port 	int `mapstructure:"port"`
 }
 
-type SSHClient struct {
-	Type string `mapstructure:"type" json:"-"`
-	Username string `mapstructure:"username" json:"-"`
-	Password string `mapstructure:"password" json:"-"`
-	KeyPath string `mapstructure:"keyPath" json:"-"`
-	KeyPassword string `mapstructure:"keyPassword" json:"-"`
+type Branding struct {
+	LogoURL string `mapstructure:"logo-url" json:"logoUrl"`
 }
 
 type Location struct {
-	ID string `mapstructure:"id" json:"id"`
 	Label string `mapstructure:"label" json:"label"`
 	Host string `mapstructure:"host" json:"-"`
-	Clients []SSHClient `mapstructure:"clients" json:"-"`
+	Username string `mapstructure:"username" json:"-"`
+	Password string `mapstructure:"password" json:"-"`
+	KeyPath string `mapstructure:"key-path" json:"-"`
+	KeyPassword string `mapstructure:"key-password" json:"-"`
 }
 
 type Config struct {
-	Debug bool `mapstructure:"debug"`
-	API api.Config `mapstructure:"api"`
-	Branding Branding `mapstructure:"branding"`
+	Debug bool `mapstructure:"debug" json:"debug"`
+	API APIConfig `mapstructure:"api" json:"-"`
+	Branding Branding `mapstructure:"branding" json:"branding"`
+	Locations map[string]Location `mapstructure:"locations" json:"locations"`
 }
 
 var config Config
@@ -50,4 +47,8 @@ func LoadConfig(path *string) (Config, error) {
 	}
 
 	return config, nil
+}
+
+func GetConfig() Config {
+	return config
 }

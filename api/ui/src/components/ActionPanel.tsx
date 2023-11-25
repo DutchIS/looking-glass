@@ -2,25 +2,53 @@ import * as Yup from 'yup';
 import { Formik, FormikHelpers } from "formik";
 import { Row, Col, Card, Button, Form } from "react-bootstrap";
 
-import config from "../../config.json";
-import { Task } from '../api/types';
+import config from '../config';
+import ValidatedInput from './ValidatedInput';
+import ValidatedSelect from './ValidatedSelect';
+import { Task, TaskResponse } from '../api/types';
+import { useStartTaskMutation } from '../api/tasks';
 
-export default function () {
+interface Props {
+    setResponse: (response: TaskResponse) => void;
+    setLoading: (response: boolean) => void;
+}
+
+export default function (props: Props) {
+    const [ startTask ] = useStartTaskMutation();
+
+    const firstLocation = Object.keys(config.locations)[0];
+
     const initialValues = {
-        location: '',
-        command: '',
+        location: firstLocation ?? '',
+        command: 'ping4',
         target: '',
     }
 
-    const validationSchema = {
+    const validationSchema = Yup.object({
         location: Yup.string().required('Required'),
         command: Yup.string().required('Required'),
         target: Yup.string().required('Required'),
-    }
+    });
 
     const submit = (data: Task, { setSubmitting }: FormikHelpers<Task>) => {
-        console.log(data);
-        setSubmitting(false);
+        console.log(data)
+        props.setLoading(true);
+        startTask(data)
+            .unwrap()
+            .then((response) => {
+                setSubmitting(false);
+                props.setLoading(false);
+                props.setResponse(response);
+                console.log(response);
+            })
+            .catch(error => {
+                props.setLoading(false);
+                props.setResponse({
+                    output: 'Failed to start task.'
+                });
+                setSubmitting(false);
+                console.log(error);
+            })
     }
 
     return (
@@ -29,48 +57,52 @@ export default function () {
 
             <Card.Body>
                 <Formik
-                    initialValues={initialValues}
                     onSubmit={submit}
+                    initialValues={initialValues}
                     validationSchema={validationSchema}
                 >
-                    {(form) => (
-                        <Form noValidate onSubmit={form.handleSubmit}>
+                    {form => (
+                        <Form onSubmit={form.handleSubmit}>
                             <Row>
                                 <Col>
                                     <Form.Group controlId="location">
                                         <Form.Label>Location</Form.Label>
-                                        <Form.Select 
+                                        <ValidatedSelect
                                             name="location"
                                             aria-label="Select a location"
                                         >
                                             <option disabled>Select a location</option>
-                                            {config.locations.map((location, index) => (
-                                                <option key={index} value={location.url}>{location.name}</option>
-                                            ))}
-                                        </Form.Select>
+                                            {Object.entries(config.locations).map((entry, index) => {
+                                                const [ key, location ] = entry;
+
+                                                return (
+                                                    <option key={index} value={key}>{location.label}</option>
+                                                );
+                                            })}
+                                        </ValidatedSelect>
                                     </Form.Group>
                                 </Col>
 
                                 <Col>
                                     <Form.Group controlId="command">
                                         <Form.Label>Command</Form.Label>
-                                        <Form.Select 
+                                        <ValidatedSelect
                                             name="command"
                                             aria-label="Select a command"
                                         >
                                             <option disabled>Select a command</option>
-                                            <option value='ping'>Ping IPv4</option>
-                                            <option value='ping'>Ping IPv6</option>
-                                            <option value='ping'>MTR IPv4</option>
-                                            <option value='ping'>MTR IPv6</option>
-                                        </Form.Select>
+                                            <option value='ping4'>Ping IPv4</option>
+                                            <option value='ping6'>Ping IPv6</option>
+                                            <option value='mtr4'>MTR IPv4</option>
+                                            <option value='mtr6'>MTR IPv6</option>
+                                        </ValidatedSelect>
                                     </Form.Group>
                                 </Col>
 
                                 <Col>
                                     <Form.Group controlId="target">
                                         <Form.Label>Target</Form.Label>
-                                        <Form.Control
+                                        <ValidatedInput
                                             type="text"
                                             name="target"
                                             placeholder="Enter a IP address"
@@ -79,11 +111,11 @@ export default function () {
                                     </Form.Group>
                                 </Col>
                             </Row>
+
+                            <Button variant="primary" type='submit' className="mt-3">Start!</Button>
                         </Form>
                     )}
                 </Formik>
-
-                <Button variant="primary" type='submit' className="mt-3">Start!</Button>
             </Card.Body>
         </Card>
     );

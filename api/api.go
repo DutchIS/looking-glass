@@ -7,15 +7,13 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/dutchis/looking-glass/config"
+
+    "github.com/rs/cors"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/go-playground/validator/v10"
 )
-
-type Config struct {
-	IP 		string `mapstructure:"ip"`
-	Port 	int `mapstructure:"port"`
-}
 
 type API struct {
 	errChan		chan error
@@ -23,14 +21,14 @@ type API struct {
 	ctx 		context.Context
 	router 		*mux.Router
 	validator  	*validator.Validate
-	config 		Config
+	config 		config.APIConfig
 }
 
 func New(
 	logger 	*logrus.Logger,	
 	ctx 	context.Context, 
 	errChan	chan error,
-	config  Config,
+	config  config.APIConfig,
 ) *API {
 	return &API{
 		logger: logger,
@@ -55,9 +53,14 @@ func (api *API) Start() {
 		api.SendErrorResponse(w, "Request method not allowed", http.StatusNotFound)
 	})
 
+	c := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowCredentials: true,
+    })
+
 	// Server!
 	httpServer := &http.Server{
-		Handler: api.router,
+		Handler: c.Handler(api.router),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

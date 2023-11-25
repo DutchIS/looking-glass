@@ -9,14 +9,8 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	"github.com/spf13/viper"
+	"github.com/dutchis/looking-glass/config"
 )
-
-type WebConfig struct {
-	Branding struct {
-		LogoURL string `json:"logoUrl"`
-	} `json:"branding"`
-}
 
 //go:embed ui/dist
 var webUI embed.FS
@@ -63,15 +57,7 @@ func (api *API) GetAdmin(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html")
 
-	webConfig := WebConfig{
-		Branding: struct {
-			LogoURL string `json:"logoUrl"`
-		}{
-			LogoURL: viper.GetString("branding.logo-url"),
-		},
-	}
-
-	jsonWebConfig, err := json.Marshal(webConfig)
+	jsonWebConfig, err := json.Marshal(config.GetConfig())
     if err != nil {
 		api.logger.WithError(err).Error("Error while encoding web config")
 		http.Error(w, "Error while encoding web config", http.StatusInternalServerError)
