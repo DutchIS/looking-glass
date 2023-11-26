@@ -5,7 +5,7 @@ import { Row, Col, Card, Button, Form } from "react-bootstrap";
 import config from '../config';
 import ValidatedInput from './ValidatedInput';
 import ValidatedSelect from './ValidatedSelect';
-import { Task, TaskResponse } from '../api/types';
+import { MTRTaskResponse, Task, TaskResponse } from '../api/types';
 import { useStartTaskMutation } from '../api/tasks';
 
 interface Props {
@@ -38,8 +38,13 @@ export default function (props: Props) {
             .then((response) => {
                 setSubmitting(false);
                 props.setLoading(false);
+                
+                if ('hops' in response) {
+                    props.setResponse(response as MTRTaskResponse);
+                    return;
+                }
+
                 props.setResponse(response);
-                console.log(response);
             })
             .catch(error => {
                 props.setLoading(false);

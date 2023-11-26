@@ -1,0 +1,20 @@
+debug: false
+
+api:
+  ip: "127.0.0.1"
+  port: 8080
+
+branding:
+  logo-url: "https://cdn.dutchis.net/dutchis/banner-black.png"
+
+geolite2:
+  database-path: "./GeoLite2-City.mmdb"
+
+locations:
+  localhost:
+    label: "Localhost"
+    host: "127.0.0.1"
+    username: ""
+    password: ""
+    key-path: ""
+    key-password: ""

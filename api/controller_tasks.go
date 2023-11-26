@@ -2,6 +2,7 @@ package api
 
 import (
 	"net"
+	"fmt"
 	"net/http"
 	"encoding/json"
 
@@ -42,6 +43,7 @@ func (api *API) HandleTaskStart(w http.ResponseWriter, req *http.Request) {
 		output, err := tasks.StartPingTask(ip, location)
 		if err != nil {
 			api.SendErrorResponse(w, "Error while running task", http.StatusInternalServerError)
+			fmt.Println(err)
 			return
 		}
 
@@ -58,6 +60,7 @@ func (api *API) HandleTaskStart(w http.ResponseWriter, req *http.Request) {
 		output, err := tasks.StartMTRTask(ip, location)
 		if err != nil {
 			api.SendErrorResponse(w, "Error while running task", http.StatusInternalServerError)
+			fmt.Println(err)
 			return
 		}
 

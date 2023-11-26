@@ -8,6 +8,7 @@ import (
 	"github.com/dutchis/looking-glass/config"
 	"github.com/dutchis/looking-glass/clients"
 
+	"github.com/spf13/viper"
 	"github.com/oschwald/geoip2-golang"
 )
 
@@ -39,17 +40,16 @@ func StartMTRTask(ipAddress net.IP, location config.Location) (output MTRTaskRes
 		Hops: []MTRHop{},
 	}
 
-	geodb, err := geoip2.Open("GeoLite2-City.mmdb")
+	geodb, err := geoip2.Open(viper.GetString("geolite2.database-path"))
 	if err != nil {
 		return MTRTaskResponse{}, err
 	}
 	defer geodb.Close()
 
-	// drop the first line
 	tracerouteOutput := strings.Split(string(sshOutput), "\n")[1:]
+	// TODO: Add IPv6 support
 	pattern := regexp.MustCompile(`\((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\)`)
 
-	// foreach line
 	for _, line := range tracerouteOutput {
 		ips := pattern.FindAllStringSubmatch(string(line), -1)
 		if len(ips) == 0 {

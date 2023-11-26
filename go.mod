@@ -1,6 +1,6 @@
 module github.com/dutchis/looking-glass
 
-go 1.21.0
+go 1.18
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect

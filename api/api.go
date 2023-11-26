@@ -73,7 +73,7 @@ func (api *API) Start() {
 			return
 		}
 
-		api.logger.Info("Starting metrics HTTP server on http://" + ipPortCombo)
+		api.logger.Info("Starting HTTP server on http://" + ipPortCombo)
 
 		httpServer.Serve(httpListener)
 	}(api.errChan)

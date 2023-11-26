@@ -1,9 +1,9 @@
 import { API } from "."
-import { Task } from "./types"
+import { Task, TaskResponse } from "./types"
 
 const TaskAPI = API.injectEndpoints({
     endpoints: (builder) => ({
-        startTask: builder.mutation<{output: string}, Task>({
+        startTask: builder.mutation<TaskResponse, Task>({
             query: (task) => ({
                 url: `/api/task/start`,
                 method: "POST",

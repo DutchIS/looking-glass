@@ -13,6 +13,10 @@ type Branding struct {
 	LogoURL string `mapstructure:"logo-url" json:"logoUrl"`
 }
 
+type GeoLite2 struct {
+	DatabasePath string `mapstructure:"database-path" json:"-"`
+}
+
 type Location struct {
 	Label string `mapstructure:"label" json:"label"`
 	Host string `mapstructure:"host" json:"-"`
