@@ -123,6 +123,10 @@ export default function () {
                                     </ZoomableGroup>
                                 </ComposableMap>
                             </Card.Body>
+
+                            <Card.Footer>
+                                This looking glass includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com">https://www.maxmind.com</a>.
+                            </Card.Footer>
                         </Card>
                     </Col>
                 </Row>
