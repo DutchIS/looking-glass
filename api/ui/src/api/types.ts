@@ -8,12 +8,12 @@ export interface TaskResponse {
     output: string
 }
 
-export interface MTRHop {
+export interface TracerouteHop {
     ip: string
     longitude: number
     latitude: number
 }
 
-export interface MTRTaskResponse extends TaskResponse {
-    hops: MTRHop[]
+export interface TracerouteTaskResponse extends TaskResponse {
+    hops: TracerouteHop[]
 }

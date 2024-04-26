@@ -1,22 +1,22 @@
 import { useState } from "react";
-import { Container, Row, Col, Card, Spinner, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { ComposableMap, Geographies, Geography, Line, Marker, Point, ZoomableGroup } from "react-simple-maps";
 
 import config from "../config";
 import ActionPanel from "../components/ActionPanel";
-import { MTRTaskResponse, TaskResponse } from "../api/types";
+import { TracerouteTaskResponse, TaskResponse } from "../api/types";
 
 export default function () {
     const [loading, setLoading] = useState<boolean>(false);
-    const [response, setResponse] = useState<TaskResponse|MTRTaskResponse|null>(null);
+    const [response, setResponse] = useState<TaskResponse|TracerouteTaskResponse|null>(null);
 
     return (
         <Container className="pt-4">
             <Row className="d-flex justify-content-between align-items-center">
                 <h1 style={{ width: 'fit-content' }}>
-                    <FontAwesomeIcon icon={faMagnifyingGlass} /> Looking Glass <Badge bg="warning" className="my-auto" style={{ fontSize: '1.25rem' }}>Beta</Badge>
+                    <FontAwesomeIcon icon={faMagnifyingGlass} /> Looking Glass
                 </h1>
 
                 <img src={config.branding.logoUrl} alt="Logo" style={{ height: '3rem', width: 'auto' }}/>
@@ -125,7 +125,7 @@ export default function () {
                             </Card.Body>
 
                             <Card.Footer>
-                                This looking glass includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com">https://www.maxmind.com</a>.
+                                This map uses geoip data which may not reflect the actualy location of the hop. This looking glass includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com">https://www.maxmind.com</a>.
                             </Card.Footer>
                         </Card>
                     </Col>

@@ -54,10 +54,10 @@ func (api *API) HandleTaskStart(w http.ResponseWriter, req *http.Request) {
 		})
 
 		break
-	case "mtr4":
+	case "traceroute4":
 		fallthrough
-	case "mtr6":
-		output, err := tasks.StartMTRTask(ip, location)
+	case "traceroute6":
+		output, err := tasks.StartTracerouteTask(ip, location)
 		if err != nil {
 			api.SendErrorResponse(w, "Error while running task", http.StatusInternalServerError)
 			fmt.Println(err)

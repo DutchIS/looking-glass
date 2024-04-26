@@ -12,37 +12,37 @@ import (
 	"github.com/oschwald/geoip2-golang"
 )
 
-type MTRHop struct {
+type TracerouteHop struct {
 	IP string `json:"ip"`
 	Latitude float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 }
 
-type MTRTaskResponse struct {
+type TracerouteTaskResponse struct {
 	Output string `json:"output"`
-	Hops []MTRHop `json:"hops"`
+	Hops []TracerouteHop `json:"hops"`
 }
 
-func StartMTRTask(ipAddress net.IP, location config.Location) (output MTRTaskResponse, err error) {
+func StartTracerouteTask(ipAddress net.IP, location config.Location) (output TracerouteTaskResponse, err error) {
 	sshClient, err := clients.GetSSHConnection(location)
 	if err != nil {
-		return MTRTaskResponse{}, err
+		return TracerouteTaskResponse{}, err
 	}
 	defer sshClient.Close()
 
 	sshOutput, err := sshClient.Run("traceroute -m 10 " + ipAddress.String())
 	if err != nil {
-		return MTRTaskResponse{}, err
+		return TracerouteTaskResponse{}, err
 	}
 
-	mtrTaskResponse := MTRTaskResponse{
+	tracerouteTaskResponse := TracerouteTaskResponse{
 		Output: string(sshOutput),
-		Hops: []MTRHop{},
+		Hops: []TracerouteHop{},
 	}
 
 	geodb, err := geoip2.Open(viper.GetString("geolite2.database-path"))
 	if err != nil {
-		return MTRTaskResponse{}, err
+		return TracerouteTaskResponse{}, err
 	}
 	defer geodb.Close()
 
@@ -63,16 +63,16 @@ func StartMTRTask(ipAddress net.IP, location config.Location) (output MTRTaskRes
 
 		record, err := geodb.City(ipAddress)
 		if err != nil {
-			return MTRTaskResponse{}, err
+			return TracerouteTaskResponse{}, err
 		}
 
 		// append to hops
-		mtrTaskResponse.Hops = append(mtrTaskResponse.Hops, MTRHop{
+		tracerouteTaskResponse.Hops = append(tracerouteTaskResponse.Hops, TracerouteHop{
 			IP: ip,
 			Latitude: record.Location.Latitude,
 			Longitude: record.Location.Longitude,
 		})
 	}
 
-	return mtrTaskResponse, nil
+	return tracerouteTaskResponse, nil
 }

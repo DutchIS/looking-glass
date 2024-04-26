@@ -1,20 +1,20 @@
 import * as Yup from 'yup';
 import { Formik, FormikHelpers } from "formik";
-import { Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Row, Col, Card, Button, Form, Alert } from "react-bootstrap";
 
 import config from '../config';
 import ValidatedInput from './ValidatedInput';
 import ValidatedSelect from './ValidatedSelect';
-import { MTRTaskResponse, Task, TaskResponse } from '../api/types';
 import { useStartTaskMutation } from '../api/tasks';
+import { TracerouteTaskResponse, Task, TaskResponse } from '../api/types';
 
 interface Props {
-    setResponse: (response: TaskResponse) => void;
+    setResponse: (response: TaskResponse|null) => void;
     setLoading: (response: boolean) => void;
 }
 
 export default function (props: Props) {
-    const [ startTask ] = useStartTaskMutation();
+    const [startTask, { error }] = useStartTaskMutation();
 
     const firstLocation = Object.keys(config.locations)[0];
 
@@ -31,16 +31,15 @@ export default function (props: Props) {
     });
 
     const submit = (data: Task, { setSubmitting }: FormikHelpers<Task>) => {
-        console.log(data)
         props.setLoading(true);
         startTask(data)
             .unwrap()
             .then((response) => {
                 setSubmitting(false);
                 props.setLoading(false);
-                
+
                 if ('hops' in response) {
-                    props.setResponse(response as MTRTaskResponse);
+                    props.setResponse(response as TracerouteTaskResponse);
                     return;
                 }
 
@@ -48,11 +47,8 @@ export default function (props: Props) {
             })
             .catch(error => {
                 props.setLoading(false);
-                props.setResponse({
-                    output: 'Failed to start task.'
-                });
+                props.setResponse(null);
                 setSubmitting(false);
-                console.log(error);
             })
     }
 
@@ -78,7 +74,7 @@ export default function (props: Props) {
                                         >
                                             <option disabled>Select a location</option>
                                             {Object.entries(config.locations).map((entry, index) => {
-                                                const [ key, location ] = entry;
+                                                const [key, location] = entry;
 
                                                 return (
                                                     <option key={index} value={key}>{location.label}</option>
@@ -98,8 +94,8 @@ export default function (props: Props) {
                                             <option disabled>Select a command</option>
                                             <option value='ping4'>Ping IPv4</option>
                                             <option value='ping6'>Ping IPv6</option>
-                                            <option value='mtr4'>MTR IPv4</option>
-                                            <option value='mtr6'>MTR IPv6</option>
+                                            <option value='traceroute4'>Traceroute IPv4</option>
+                                            <option value='traceroute6'>Traceroute IPv6</option>
                                         </ValidatedSelect>
                                     </Form.Group>
                                 </Col>
@@ -116,6 +112,16 @@ export default function (props: Props) {
                                     </Form.Group>
                                 </Col>
                             </Row>
+
+                            {(error && ('data' in error) && ('error' in (error.data as object))) &&
+                                <Row className='mt-3'>
+                                    <Col>
+                                        <Alert variant='danger' dismissible>
+                                            Error: {(error.data as { [key: string]: string }).error}
+                                        </Alert>
+                                    </Col>
+                                </Row>
+                            }
 
                             <Button variant="primary" type='submit' className="mt-3">Start!</Button>
                         </Form>

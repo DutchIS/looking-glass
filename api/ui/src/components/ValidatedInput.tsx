@@ -23,6 +23,7 @@ export default function (props: Props) {
                             isValid={form.touched[field.name] && isValid}
                             isInvalid={isInvalid}
                             feedback={form.errors[field.name]}
+                            style={{borderTopRightRadius: 'var(--bs-border-radius)', borderBottomRightRadius: 'var(--bs-border-radius)'}}
                             {...props}
                         />
 
