@@ -45,7 +45,7 @@ export default function (props: Props) {
 
                 props.setResponse(response);
             })
-            .catch(error => {
+            .catch(() => {
                 props.setLoading(false);
                 props.setResponse(null);
                 setSubmitting(false);
@@ -65,7 +65,7 @@ export default function (props: Props) {
                     {form => (
                         <Form onSubmit={form.handleSubmit}>
                             <Row>
-                                <Col>
+                                <Col sm={12} md={6} lg={4}>
                                     <Form.Group controlId="location">
                                         <Form.Label>Location</Form.Label>
                                         <ValidatedSelect
@@ -84,7 +84,7 @@ export default function (props: Props) {
                                     </Form.Group>
                                 </Col>
 
-                                <Col>
+                                <Col sm={12} md={6} lg={4}>
                                     <Form.Group controlId="command">
                                         <Form.Label>Command</Form.Label>
                                         <ValidatedSelect
@@ -100,7 +100,7 @@ export default function (props: Props) {
                                     </Form.Group>
                                 </Col>
 
-                                <Col>
+                                <Col sm={12} md={6} lg={4}>
                                     <Form.Group controlId="target">
                                         <Form.Label>Target</Form.Label>
                                         <ValidatedInput
